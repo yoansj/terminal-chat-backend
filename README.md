@@ -1,23 +1,22 @@
-# Getting Started with [Fastify-CLI](https://www.npmjs.com/package/fastify-cli)
-This project was bootstrapped with Fastify-CLI.
+# Terminal-Chat Backend
 
-## Available Scripts
+Welcome to the back-end repository of our project Terminal-Chat
+Our team is made of:
+- yoan.saint-juste
+- mathis.rodrigues-de-oliveira
 
-In the project directory, you can run:
+# Launch the project
+## Prerequisites
+- node (from 16)
+- npm (from 8)
 
-### `npm run dev`
+## Commands
 
-To start the app in dev mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Start built version
+`npm start`
 
-### `npm start`
+### Run tests
+`npm run test`
 
-For production mode
-
-### `npm run test`
-
-Run the test cases.
-
-## Learn More
-
-To learn Fastify, check out the [Fastify documentation](https://www.fastify.io/docs/latest/).
+### Run dev version
+`npm run dev`
