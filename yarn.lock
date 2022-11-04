@@ -324,6 +324,11 @@
     type-is "^1.6.18"
     vary "^1.1.2"
 
+"@fastify/type-provider-typebox@^2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@fastify/type-provider-typebox/-/type-provider-typebox-2.3.0.tgz#4adb4a9cd3ccdbc5b2506852f3cec9554d678425"
+  integrity sha512-arEH1FL6CNTgctoVw++jNPJN9DdzUe7rJlb3XJyw7rAGiT2m402P4GMFVhtDqndQzEJN37UJXVYbCR9D0AahgQ==
+
 "@humanwhocodes/config-array@^0.11.6":
   version "0.11.6"
   resolved "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.11.6.tgz"
@@ -442,6 +447,11 @@
   dependencies:
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
+
+"@sinclair/typebox@^0.25.2":
+  version "0.25.2"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.25.2.tgz#8de5684b8ef7c46444d3ee54f6711d6f4e74aa6a"
+  integrity sha512-QWjo2shO8oUWM6rSwIz7tUY8+WxP0fhUYQvaFA5eq+sECaQjQaRZIBXgWhWzzsB+lbgjljB1zRFfyX8mudn1gQ==
 
 "@tsconfig/node10@^1.0.7":
   version "1.0.9"
