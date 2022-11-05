@@ -6,7 +6,7 @@ import { isTokenValid } from '../utils/isTokenValid';
 /**
  * Simple plugin that export utils functions
  */
-export default fp(async (fastify, opts) => {
+export default fp(async (fastify) => {
   fastify.decorate('utils', {
     createToken,
     getExistingToken,
