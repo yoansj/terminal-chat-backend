@@ -8,9 +8,13 @@ export default fp(async (fastify, opts) => {
     if (routeOptions.config && routeOptions.config.protected) {
       if (!routeOptions.preHandler) {
         routeOptions.preHandler = async (request, reply) => {
-          const token = request.headers.authorization;
-          if (token) {
-            const isValid = await fastify.utils.isTokenValid(token);
+          if (!request.headers.authorization) {
+            reply.status(401).send({ errorCode: 70, success: false });
+            return;
+          }
+          const tokenId = request.headers.authorization.split('Bearer ')[1];
+          if (tokenId) {
+            const isValid = await fastify.utils.isTokenValid(tokenId);
             if (isValid) {
               return;
             }
@@ -21,9 +25,13 @@ export default fp(async (fastify, opts) => {
       }
       if (Array.isArray(routeOptions.preHandler)) {
         routeOptions.preHandler.push(async (request, reply) => {
-          const token = request.headers.authorization;
-          if (token) {
-            const isValid = await fastify.utils.isTokenValid(token);
+          if (!request.headers.authorization) {
+            reply.status(401).send({ errorCode: 70, success: false });
+            return;
+          }
+          const tokenId = request.headers.authorization.split('Bearer ')[1];
+          if (tokenId) {
+            const isValid = await fastify.utils.isTokenValid(tokenId);
             if (isValid) {
               return;
             }
