@@ -25,7 +25,8 @@
     "@sinclair/typebox": "^0.25.2",
     "fastify": "^4.0.0",
     "fastify-cli": "^5.5.0",
-    "fastify-plugin": "^4.0.0"
+    "fastify-plugin": "^4.0.0",
+    "mongoose": "^6.7.1"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
