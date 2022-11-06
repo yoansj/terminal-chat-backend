@@ -1,10 +1,10 @@
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { FastifyPluginAsync } from 'fastify';
-import { User, UserModel, UserType } from '../../schemas/User';
 import { Type } from '@sinclair/typebox';
+import { User, UserModel, UserType } from '../../schemas/User';
 import { createToken } from '../../utils/createToken';
 
-const users: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+const users: FastifyPluginAsync = async (fastify): Promise<void> => {
   /**
    * Create a new user
    */
@@ -26,7 +26,6 @@ const users: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     await user.save();
     const token = await createToken(user._id.toString());
 
-    // @ts-ignore
     reply.status(200).send({ ...user.toObject(), token: token._id.toString() });
   });
 

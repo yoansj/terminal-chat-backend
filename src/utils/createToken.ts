@@ -5,7 +5,7 @@ import { TokenModel } from '../schemas/Token';
  */
 export const createToken = async (user: string) => {
   const token = await new TokenModel({
-    user: user,
+    user,
     createdAt: new Date().toISOString(),
     expiresAt: new Date(
       new Date().getTime() + 1000 * 60 * 60 * 24,
@@ -16,3 +16,5 @@ export const createToken = async (user: string) => {
 
   return token._id;
 };
+
+export default createToken;

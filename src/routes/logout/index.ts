@@ -2,13 +2,14 @@ import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { FastifyPluginAsync } from 'fastify';
 import { TokenModel } from '../../schemas/Token';
 
-const logout: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+const logout: FastifyPluginAsync = async (fastify): Promise<void> => {
   /**
    * Logout from the website
+   * TODO: Se plaindre de la config eslint à deux balles
    */
   fastify
     .withTypeProvider<TypeBoxTypeProvider>()
-    .get<{}>('/', {}, async (request, reply) => {
+    .get('/', {}, async (request, reply) => {
       if (request.headers.authorization) {
         const tokenId = request.headers.authorization.split('Bearer ')[1];
         const token = await TokenModel.findById(tokenId).exec();
@@ -16,9 +17,8 @@ const logout: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
         if (token) {
           await TokenModel.findByIdAndDelete(tokenId).exec();
           return { success: true };
-        } else {
-          reply.status(401).send({ errorCode: 70, success: false });
         }
+        reply.status(401).send({ errorCode: 70, success: false });
       } else {
         reply.status(401).send({ errorCode: 70, success: false });
       }

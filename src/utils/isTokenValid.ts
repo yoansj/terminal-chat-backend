@@ -9,10 +9,11 @@ export const isTokenValid = async (tokenId: string) => {
   if (token) {
     if (new Date(token.expiresAt) > new Date()) {
       return true;
-    } else {
-      await token.remove();
-      return false;
     }
+    await token.remove();
+    return false;
   }
   return false;
 };
+
+export default isTokenValid;

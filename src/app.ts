@@ -14,11 +14,11 @@ const app: FastifyPluginAsync<AppOptions> = async (
   opts,
 ): Promise<void> => {
   try {
-    // @ts-ignore
-    await mongoose.connect(process.env.DB_DEV, {});
-    console.log('Connected to MongoDB');
-  } catch (e) {
-    console.error(e);
+    if (process.env.DB_DEV) {
+      await mongoose.connect(process.env.DB_DEV, {});
+    }
+  } catch (err) {
+    throw new Error("Can't connect to the database");
   }
 
   // This loads all plugins defined in plugins

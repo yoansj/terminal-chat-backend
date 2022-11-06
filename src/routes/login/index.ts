@@ -1,9 +1,9 @@
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { FastifyPluginAsync } from 'fastify';
-import { User, UserModel, UserType } from '../../schemas/User';
 import { Type } from '@sinclair/typebox';
+import { User, UserModel, UserType } from '../../schemas/User';
 
-const login: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+const login: FastifyPluginAsync = async (fastify): Promise<void> => {
   /**
    * Login to the website
    */
@@ -27,13 +27,12 @@ const login: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 
       if (oldToken) {
         return { ...user.toObject(), token: oldToken };
-      } else {
-        const newToken = await fastify.utils.createToken(user._id.toString());
-        return { ...user.toObject(), token: newToken };
       }
-    } else {
-      reply.status(401).send({ errorCode: 70, success: false });
+      const newToken = await fastify.utils.createToken(user._id.toString());
+      return { ...user.toObject(), token: newToken };
     }
+    reply.status(401).send({ errorCode: 70, success: false });
+    return { success: false, statusCode: 401, errorCode: 70 };
   });
 };
 

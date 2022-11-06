@@ -9,10 +9,11 @@ export const getExistingToken = async (userId: string) => {
   if (token) {
     if (new Date(token.expiresAt) > new Date()) {
       return token._id;
-    } else {
-      await token.remove();
-      return null;
     }
+    await token.remove();
+    return null;
   }
   return null;
 };
+
+export default getExistingToken;

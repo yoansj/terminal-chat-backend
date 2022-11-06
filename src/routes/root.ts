@@ -1,7 +1,10 @@
 import { FastifyPluginAsync } from 'fastify';
 
-const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  fastify.get('/', async (request, reply) => ({ root: true }));
+const root: FastifyPluginAsync = async (fastify): Promise<void> => {
+  fastify.get(
+    '/',
+    async () => `Server is running at: ${new Date().toUTCString()}`,
+  );
 };
 
 export default root;

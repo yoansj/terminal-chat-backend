@@ -9,10 +9,11 @@
     "node": true
   },
   "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
     "airbnb-base",
     "airbnb-typescript/base"
-  ]
+  ],
+  "rules": {
+    // TODO: Se plaindre de la config eslint à deux balles de airbnb
+    "no-underscore-dangle": "off"
+  }
 }

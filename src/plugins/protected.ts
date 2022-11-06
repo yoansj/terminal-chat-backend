@@ -3,7 +3,7 @@ import fp from 'fastify-plugin';
 /**
  * Simple plugin that protects routes that need login
  */
-export default fp(async (fastify, opts) => {
+export default fp(async (fastify) => {
   fastify.addHook('onRoute', (routeOptions) => {
     if (routeOptions.config && routeOptions.config.protected) {
       if (!routeOptions.preHandler) {
@@ -38,7 +38,6 @@ export default fp(async (fastify, opts) => {
           }
           reply.status(401).send({ errorCode: 70, success: false });
         });
-        return;
       }
     }
   });
