@@ -7,6 +7,7 @@ export default fp(async (fastify) => {
   fastify.addHook('onRoute', (routeOptions) => {
     if (routeOptions.config && routeOptions.config.protected) {
       if (!routeOptions.preHandler) {
+        // eslint-disable-next-line no-param-reassign
         routeOptions.preHandler = async (request, reply) => {
           if (!request.headers.authorization) {
             reply.status(401).send({ errorCode: 70, success: false });

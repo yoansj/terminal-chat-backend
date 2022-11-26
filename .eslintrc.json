@@ -13,7 +13,6 @@
     "airbnb-typescript/base"
   ],
   "rules": {
-    // TODO: Se plaindre de la config eslint à deux balles de airbnb
     "no-underscore-dangle": "off"
   }
 }
