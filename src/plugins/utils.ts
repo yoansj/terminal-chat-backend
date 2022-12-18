@@ -2,6 +2,7 @@ import fp from 'fastify-plugin';
 import { createToken } from '../utils/createToken';
 import { getExistingToken } from '../utils/getExistingToken';
 import { isTokenValid } from '../utils/isTokenValid';
+import getUserFromToken from '../utils/getUserFromToken';
 
 /**
  * Simple plugin that export utils functions
@@ -11,6 +12,7 @@ export default fp(async (fastify) => {
     createToken,
     getExistingToken,
     isTokenValid,
+    getUserFromToken,
   });
 });
 
@@ -29,6 +31,11 @@ declare module 'fastify' {
        * Check if a token is valid
        */
       isTokenValid: typeof isTokenValid;
+
+      /**
+       * Get a user from a token
+       */
+      getUserFromToken: typeof getUserFromToken;
     };
   }
 }

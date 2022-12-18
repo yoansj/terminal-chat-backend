@@ -5,7 +5,6 @@ import { TokenModel } from '../../schemas/Token';
 const logout: FastifyPluginAsync = async (fastify): Promise<void> => {
   /**
    * Logout from the website
-   * TODO: Se plaindre de la config eslint à deux balles
    */
   fastify
     .withTypeProvider<TypeBoxTypeProvider>()

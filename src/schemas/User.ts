@@ -2,9 +2,9 @@ import { Static, Type } from '@sinclair/typebox';
 import { Schema, model } from 'mongoose';
 
 export const User = Type.Object({
+  _id: Type.Optional(Type.String()),
   name: Type.String(),
   mail: Type.String({ format: 'email' }),
-  // Minimum eight characters, at least one letter and one number
   password: Type.String(),
   bio: Type.Optional(Type.String()),
 });

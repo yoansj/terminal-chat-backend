@@ -26,13 +26,20 @@ const login: FastifyPluginAsync = async (fastify): Promise<void> => {
       );
 
       if (oldToken) {
-        return { ...user.toObject(), token: oldToken };
+        reply
+          .status(200)
+          .send({
+            ...user.toObject(),
+            token: oldToken._id.toString(),
+            success: true,
+          });
       }
       const newToken = await fastify.utils.createToken(user._id.toString());
-      return { ...user.toObject(), token: newToken };
+      reply
+        .status(200)
+        .send({ ...user.toObject(), token: newToken, success: true });
     }
     reply.status(401).send({ errorCode: 70, success: false });
-    return { success: false, statusCode: 401, errorCode: 70 };
   });
 };
 

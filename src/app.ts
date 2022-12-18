@@ -2,6 +2,7 @@ import { join } from 'path';
 import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload';
 import { FastifyPluginAsync } from 'fastify';
 import mongoose from 'mongoose';
+import fastifyIO from 'fastify-socket.io';
 
 export type AppOptions = {
   // Place your custom options for app below here.
@@ -20,6 +21,16 @@ const app: FastifyPluginAsync<AppOptions> = async (
   } catch (err) {
     throw new Error("Can't connect to the database");
   }
+
+  fastify.register(fastifyIO);
+
+  fastify.ready().then(() => {
+    fastify.io.on('connection', (socket) => {
+      socket.emit('hello !', {
+        res: 'hello',
+      });
+    });
+  });
 
   // This loads all plugins defined in plugins
   // those should be support plugins that are reused
