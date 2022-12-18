@@ -3,6 +3,11 @@ import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload';
 import { FastifyPluginAsync } from 'fastify';
 import mongoose from 'mongoose';
 import fastifyIO from 'fastify-socket.io';
+// @ts-ignore
+import fastifySwagger from '@fastify/swagger';
+import swaggerUI from '@fastify/swagger-ui';
+import { Room } from './schemas/Room';
+import { User } from './schemas/User';
 
 export type AppOptions = {
   // Place your custom options for app below here.
@@ -21,6 +26,24 @@ const app: FastifyPluginAsync<AppOptions> = async (
   } catch (err) {
     throw new Error("Can't connect to the database");
   }
+
+  await fastify.register(fastifySwagger, {
+    swagger: {
+      info: {
+        title: 'Terminal Chat Backend Documentation',
+        description: 'Documentation for the Terminal Chat Backend project',
+        version: '0.1.0',
+      },
+      definitions: {
+        User,
+        Room,
+      },
+    },
+  });
+
+  // fastify.addSchema()
+
+  await fastify.register(swaggerUI, {});
 
   fastify.register(fastifyIO);
 
