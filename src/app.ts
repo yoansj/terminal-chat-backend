@@ -24,6 +24,10 @@ const app: FastifyPluginAsync<AppOptions> = async (
       if (process.env.DB_PROD) {
         await mongoose.connect(process.env.DB_PROD, {});
       }
+    } else if (process.env.TEST === 'true') {
+      if (process.env.DB_TEST) {
+        await mongoose.connect(process.env.DB_TEST, {});
+      }
     } else if (process.env.DB_DEV) {
       await mongoose.connect(process.env.DB_DEV, {});
     }
@@ -36,7 +40,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
       info: {
         title: 'Terminal Chat Backend Documentation',
         description: 'Documentation for the Terminal Chat Backend project',
-        version: '0.1.0',
+        version: '0.4.0',
       },
       definitions: {
         User,
@@ -72,7 +76,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
 
   await fastify.register(swaggerUI, {});
 
-  fastify.register(fastifyIO);
+  await fastify.register(fastifyIO);
 
   fastify.ready().then(() => {
     fastify.io.on('connection', (socket) => {

@@ -118,6 +118,55 @@ const users: FastifyPluginAsync = async (fastify): Promise<void> => {
       }
     },
   );
+
+  /**
+   * Gets login user profile
+   */
+  fastify.withTypeProvider<TypeBoxTypeProvider>().get<{
+    Params: {};
+    Response: {
+      200: UserType;
+      401: { errorCode: number };
+    };
+  }>(
+    '/profile',
+    {
+      schema: {
+        tags: ['User'],
+        summary: 'Returns connected user profile',
+        security: [
+          {
+            Bearer: ['Bearer [token]'],
+          },
+        ],
+        response: {
+          200: User,
+          401: {
+            type: 'object',
+            description: 'User not connected (40)',
+            properties: {
+              errorCode: { type: 'number' },
+            },
+          },
+        },
+      },
+      config: { protected: true },
+    },
+    async (request, reply) => {
+      if (request.headers.authorization) {
+        const user = await fastify.utils.getUserFromToken(
+          request.headers.authorization,
+        );
+        if (user) {
+          reply.status(200).send(user);
+        } else {
+          reply.status(401).send({ errorCode: 40 });
+        }
+      } else {
+        reply.status(401).send({ errorCode: 40 });
+      }
+    },
+  );
 };
 
 export default users;
