@@ -6,6 +6,7 @@ import fastifyIO from 'fastify-socket.io';
 // @ts-ignore
 import fastifySwagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
+import cors from '@fastify/cors';
 import { Room } from './schemas/Room';
 import { User } from './schemas/User';
 
@@ -34,6 +35,8 @@ const app: FastifyPluginAsync<AppOptions> = async (
   } catch (err) {
     throw new Error("Can't connect to the database");
   }
+
+  await fastify.register(cors, {});
 
   await fastify.register(fastifySwagger, {
     swagger: {
