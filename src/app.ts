@@ -19,22 +19,22 @@ const app: FastifyPluginAsync<AppOptions> = async (
   fastify,
   opts,
 ): Promise<void> => {
-  try {
-    if (process.env.PROD === 'true') {
-      if (process.env.DB_PROD) {
-        await mongoose.connect(process.env.DB_PROD, {});
-      }
-    } else if (process.env.TEST === 'true') {
-      if (process.env.DB_TEST) {
-        await mongoose.connect(process.env.DB_TEST, {});
-      }
-    } else if (process.env.DB_DEV) {
-      await mongoose.connect(process.env.DB_DEV, {});
-    }
-  } catch (err) {
-    console.log(err);
-    throw new Error("Can't connect to the database");
-  }
+  // try {
+  //   if (process.env.PROD === 'true') {
+  //     if (process.env.DB_PROD) {
+  //       await mongoose.connect(process.env.DB_PROD, {});
+  //     }
+  //   } else if (process.env.TEST === 'true') {
+  //     if (process.env.DB_TEST) {
+  //       await mongoose.connect(process.env.DB_TEST, {});
+  //     }
+  //   } else if (process.env.DB_DEV) {
+  //     await mongoose.connect(process.env.DB_DEV, {});
+  //   }
+  // } catch (err) {
+  //   console.log(err);
+  //   throw new Error("Can't connect to the database");
+  // }
 
   await fastify.register(fastifySwagger, {
     swagger: {
