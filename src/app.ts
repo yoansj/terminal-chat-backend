@@ -32,6 +32,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
       await mongoose.connect(process.env.DB_DEV, {});
     }
   } catch (err) {
+    console.log(err);
     throw new Error("Can't connect to the database");
   }
 
