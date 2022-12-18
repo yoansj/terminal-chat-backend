@@ -9,25 +9,66 @@ const users: FastifyPluginAsync = async (fastify): Promise<void> => {
    * Create a new user
    */
   fastify.withTypeProvider<TypeBoxTypeProvider>().post<{
-    Body: UserType;
-  }>('/', { schema: { body: User } }, async (request, reply) => {
-    const { name, mail, password } = request.body;
+    Body: Omit<UserType, '_id'>;
+    Response: {
+      201: UserType & { token: string };
+      409: { errorCode: number };
+    };
+  }>(
+    '/',
+    {
+      schema: {
+        response: {
+          200: {
+            type: 'object',
+            description:
+              "User was created successfully, returns the user and it's token",
+            properties: {
+              _id: { type: 'string' },
+              name: { type: 'string' },
+              mail: { type: 'string' },
+              bio: { type: 'string' },
+              token: { type: 'string' },
+            },
+          },
+          409: {
+            type: 'object',
+            description: 'User already exists (40)',
+            properties: {
+              errorCode: { type: 'number' },
+            },
+          },
+        },
+        body: User,
+        tags: ['User'],
+        description: `Register to the application\n\n
+          _id: Is not used\n
+          mail: Must be unique\n
+          bio: Is not required (User gets a default value)`,
+        summary: 'Register to the application',
+      },
+    },
+    async (request, reply) => {
+      const { name, mail, password, bio } = request.body;
 
-    if (await UserModel.findOne({ mail }).exec()) {
-      reply.status(409).send({ errorCode: 40 });
-    }
+      if (await UserModel.findOne({ mail }).exec()) {
+        reply.status(409).send({ errorCode: 40 });
+      }
 
-    const user = new UserModel({
-      name,
-      mail,
-      password,
-      bio: "Hey ! I'm new there :)",
-    });
-    await user.save();
-    const token = await createToken(user._id.toString());
+      const user = new UserModel({
+        name,
+        mail,
+        password,
+        bio: bio || "Hey ! I'm new there :)",
+      });
+      await user.save();
+      const token = await createToken(user._id.toString());
 
-    reply.status(200).send({ ...user.toObject(), token: token._id.toString() });
-  });
+      reply
+        .status(200)
+        .send({ ...user.toObject(), token: token._id.toString() });
+    },
+  );
 
   /**
    * Gets a user by its id
@@ -36,13 +77,47 @@ const users: FastifyPluginAsync = async (fastify): Promise<void> => {
     Params: {
       id: string;
     };
-  }>('/:id', { schema: { params: Type.Object({ id: Type.String() }) }, config: { protected: true } }, async (request, reply) => {
-    const { id } = request.params;
+    Response: {
+      200: UserType;
+      404: { errorCode: number };
+    };
+  }>(
+    '/:id',
+    {
+      schema: {
+        params: Type.Object({ id: Type.String() }),
+        tags: ['User'],
+        summary: 'Gets a user with its id',
+        security: [
+          {
+            Bearer: ['Bearer [token]'],
+          },
+        ],
+        response: {
+          200: User,
+          404: {
+            type: 'object',
+            description: 'User not found (41)',
+            properties: {
+              errorCode: { type: 'number' },
+            },
+          },
+        },
+      },
+      config: { protected: true },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
 
-    const user = await UserModel.findById(id).exec();
+      const user = await UserModel.findById(id).exec();
 
-    reply.status(200).send(user);
-  });
+      if (!user) {
+        reply.status(404).send({ errorCode: 41 });
+      } else {
+        reply.status(200).send(user);
+      }
+    },
+  );
 };
 
 export default users;

@@ -38,10 +38,33 @@ const app: FastifyPluginAsync<AppOptions> = async (
         User,
         Room,
       },
+      tags: [
+        {
+          name: 'Health',
+          description: 'Health related endpoints',
+        },
+        {
+          name: 'User',
+          description: 'User management endpoints',
+        },
+        {
+          name: 'Room',
+          description: 'Room management endpoints',
+        },
+        {
+          name: 'Accounts',
+          description: 'Account management endpoints',
+        },
+      ],
+      securityDefinitions: {
+        Bearer: {
+          type: 'apiKey',
+          name: 'Authorization',
+          in: 'header',
+        },
+      },
     },
   });
-
-  // fastify.addSchema()
 
   await fastify.register(swaggerUI, {});
 
