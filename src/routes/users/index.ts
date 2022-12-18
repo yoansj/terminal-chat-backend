@@ -3,6 +3,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { Type } from '@sinclair/typebox';
 import { User, UserModel, UserType } from '../../schemas/User';
 import { createToken } from '../../utils/createToken';
+import ERROR_CODES from '../../utils/errorCodes';
 
 const users: FastifyPluginAsync = async (fastify): Promise<void> => {
   /**
@@ -112,7 +113,7 @@ const users: FastifyPluginAsync = async (fastify): Promise<void> => {
       const user = await UserModel.findById(id).exec();
 
       if (!user) {
-        reply.status(404).send({ errorCode: 41 });
+        reply.status(404).send({ errorCode: ERROR_CODES.NotFound });
       } else {
         reply.status(200).send(user);
       }
@@ -160,10 +161,10 @@ const users: FastifyPluginAsync = async (fastify): Promise<void> => {
         if (user) {
           reply.status(200).send(user);
         } else {
-          reply.status(401).send({ errorCode: 40 });
+          reply.status(401).send({ errorCode: ERROR_CODES.InvalidToken });
         }
       } else {
-        reply.status(401).send({ errorCode: 40 });
+        reply.status(401).send({ errorCode: ERROR_CODES.NotFound });
       }
     },
   );

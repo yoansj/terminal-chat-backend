@@ -1,4 +1,5 @@
 import fp from 'fastify-plugin';
+import { ERROR_CODES } from '../utils/errorCodes';
 
 /**
  * Simple plugin that protects routes that need login
@@ -20,14 +21,18 @@ export default fp(async (fastify) => {
               return;
             }
           }
-          reply.status(401).send({ errorCode: 70, success: false });
+          reply
+            .status(401)
+            .send({ errorCode: ERROR_CODES.InvalidToken, success: false });
         };
         return;
       }
       if (Array.isArray(routeOptions.preHandler)) {
         routeOptions.preHandler.push(async (request, reply) => {
           if (!request.headers.authorization) {
-            reply.status(401).send({ errorCode: 70, success: false });
+            reply
+              .status(401)
+              .send({ errorCode: ERROR_CODES.InvalidToken, success: false });
             return;
           }
           const tokenId = request.headers.authorization.split('Bearer ')[1];
@@ -37,7 +42,9 @@ export default fp(async (fastify) => {
               return;
             }
           }
-          reply.status(401).send({ errorCode: 70, success: false });
+          reply
+            .status(401)
+            .send({ errorCode: ERROR_CODES.InvalidToken, success: false });
         });
       }
     }

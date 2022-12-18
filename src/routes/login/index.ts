@@ -2,6 +2,7 @@ import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { FastifyPluginAsync } from 'fastify';
 import { Type } from '@sinclair/typebox';
 import { User, UserModel, UserType } from '../../schemas/User';
+import ERROR_CODES from '../../utils/errorCodes';
 
 const login: FastifyPluginAsync = async (fastify): Promise<void> => {
   /**
@@ -68,7 +69,9 @@ const login: FastifyPluginAsync = async (fastify): Promise<void> => {
           .status(200)
           .send({ ...user.toObject(), token: newToken, success: true });
       }
-      reply.status(401).send({ errorCode: 70, success: false });
+      reply
+        .status(401)
+        .send({ errorCode: ERROR_CODES.WrongPassword, success: false });
     },
   );
 };

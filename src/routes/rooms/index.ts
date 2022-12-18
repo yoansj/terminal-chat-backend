@@ -3,6 +3,7 @@ import { RoomModel } from './../../schemas/Room';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { FastifyPluginAsync } from 'fastify';
 import { RoomType, Room } from '../../schemas/Room';
+import ERROR_CODES from '../../utils/errorCodes';
 
 const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
   /**
@@ -172,14 +173,14 @@ const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
               await room.save();
               reply.status(200).send({ ...room });
             } else {
-              reply.status(401).send({ errorCode: 40 });
+              reply.status(401).send({ errorCode: ERROR_CODES.InvalidToken });
             }
           }
         } else {
-          reply.status(401).send({ errorCode: 40 });
+          reply.status(401).send({ errorCode: ERROR_CODES.WrongPassword });
         }
       } else {
-        reply.status(404).send({ errorCode: 40 });
+        reply.status(404).send({ errorCode: ERROR_CODES.NotFound });
       }
     },
   );

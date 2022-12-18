@@ -1,14 +1,17 @@
 import { TokenModel } from '../schemas/Token';
+import { UserType } from '../schemas/User';
 
 /**
  * Gets an existing token from the database
  */
 export const getExistingToken = async (userId: string) => {
-  const token = await TokenModel.findOne({ user: userId }).exec();
+  const token = await TokenModel.findOne({ user: userId })
+    .populate<{ user: UserType }>('user')
+    .exec();
 
   if (token) {
     if (new Date(token.expiresAt) > new Date()) {
-      return token._id;
+      return token;
     }
     await token.remove();
     return null;
