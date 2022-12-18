@@ -20,7 +20,11 @@ const app: FastifyPluginAsync<AppOptions> = async (
   opts,
 ): Promise<void> => {
   try {
-    if (process.env.DB_DEV) {
+    if (process.env.PROD === 'true') {
+      if (process.env.DB_PROD) {
+        await mongoose.connect(process.env.DB_PROD, {});
+      }
+    } else if (process.env.DB_DEV) {
       await mongoose.connect(process.env.DB_DEV, {});
     }
   } catch (err) {
