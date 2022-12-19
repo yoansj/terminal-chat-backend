@@ -1,1 +1,3 @@
 src/routes/*
+migrate.*.config.js
+migrations/*

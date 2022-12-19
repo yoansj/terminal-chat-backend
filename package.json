@@ -13,7 +13,13 @@
     "watch:ts": "tsc -w",
     "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
     "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "migration:create": "migrate-mongo create",
+    "migration:dev:up": "migrate-mongo up --file migrate.dev.config.js",
+    "migration:dev:down": "migrate-mongo down --file migrate.dev.config.js",
+    "migration:prod:up": "migrate-mongo up --file migrate.prod.config.js",
+    "migration:prod:down": "migrate-mongo down --file migrate.prod.config.js",
+    "migration:init": "migrate-mongo init"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +37,7 @@
     "fastify-cli": "^5.5.0",
     "fastify-plugin": "^4.0.0",
     "fastify-socket.io": "^4.0.0",
+    "migrate-mongo": "^9.0.0",
     "mongoose": "^6.7.1",
     "socket.io": "^4.5.4"
   },

@@ -4,6 +4,7 @@ import { Type } from '@sinclair/typebox';
 import { User, UserModel, UserType } from '../../schemas/User';
 import { createToken } from '../../utils/createToken';
 import ERROR_CODES from '../../utils/errorCodes';
+import EMAIL_REGEX from '../../utils/regex';
 
 const users: FastifyPluginAsync = async (fastify): Promise<void> => {
   /**
@@ -34,7 +35,7 @@ const users: FastifyPluginAsync = async (fastify): Promise<void> => {
           },
           409: {
             type: 'object',
-            description: 'User already exists (40)',
+            description: 'User already exists (60)',
             properties: {
               errorCode: { type: 'number' },
             },
@@ -52,8 +53,15 @@ const users: FastifyPluginAsync = async (fastify): Promise<void> => {
     async (request, reply) => {
       const { name, mail, password, bio } = request.body;
 
-      if (await UserModel.findOne({ mail }).exec()) {
-        reply.status(409).send({ errorCode: 40 });
+      const res = await UserModel.findOne({ mail }).exec();
+
+      if (res !== null) {
+        reply.status(409).send({ errorCode: ERROR_CODES.AlreadyExists });
+        return;
+      }
+
+      if (!EMAIL_REGEX.test(mail)) {
+        reply.status(400).send({ errorCode: ERROR_CODES.InvalidMail });
       }
 
       const user = new UserModel({

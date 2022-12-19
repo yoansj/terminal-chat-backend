@@ -4,7 +4,7 @@ import { Schema, model } from 'mongoose';
 export const User = Type.Object({
   _id: Type.Optional(Type.String()),
   name: Type.String(),
-  mail: Type.String({ format: 'email' }),
+  mail: Type.String(),
   password: Type.String(),
   bio: Type.Optional(Type.String()),
 });
