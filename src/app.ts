@@ -7,9 +7,9 @@ import fastifyIO from 'fastify-socket.io';
 import fastifySwagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
 import cors from '@fastify/cors';
-import { Room, RoomModel } from './schemas/Room';
+import { Room } from './schemas/Room';
 import { User } from './schemas/User';
-import { ERROR_CODES } from './utils/errorCodes';
+import setupSocket from './socket';
 
 export type AppOptions = {
   // Place your custom options for app below here.
@@ -83,54 +83,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
   await fastify.register(fastifyIO);
 
   fastify.ready().then(() => {
-    fastify.io.on('connection', async (socket) => {
-      if (socket.handshake.auth.token) {
-        const valid = await fastify.utils.isTokenValid(
-          socket.handshake.auth.token,
-        );
-
-        if (valid) {
-          const token = await fastify.utils.getExistingToken(
-            socket.handshake.auth.token,
-          );
-          if (token) {
-            if (socket.handshake.query.room) {
-              const room = await RoomModel.findById(
-                socket.handshake.query.room,
-              ).exec();
-
-              if (room) {
-                if (token.user._id) {
-                  if (room.participants.indexOf(token.user._id) === -1) {
-                    socket.emit('error', {
-                      errorCode: ERROR_CODES.InvalidToken,
-                    });
-                    socket.disconnect();
-                  } else {
-                    socket.join(socket.handshake.query.room);
-                    socket.emit('joined', {
-                      room: socket.handshake.query.room,
-                    });
-                  }
-                } else {
-                  socket.emit('error', { errorCode: ERROR_CODES.InvalidToken });
-                  socket.disconnect();
-                }
-              } else {
-                socket.emit('error', { errorCode: ERROR_CODES.NotFound });
-                socket.disconnect();
-              }
-            }
-          } else {
-            socket.emit('error', { errorCode: ERROR_CODES.InvalidToken });
-            socket.disconnect();
-          }
-        }
-      } else {
-        socket.emit('error', { errorCode: ERROR_CODES.InvalidToken });
-        socket.disconnect();
-      }
-    });
+    setupSocket({ fastify });
   });
 
   // This loads all plugins defined in plugins
