@@ -1,7 +1,9 @@
 import { FastifyInstance } from 'fastify';
 import { Socket } from 'socket.io';
 import { RoomModel } from '../schemas/Room';
+import { UserType } from '../schemas/User';
 import { ERROR_CODES } from '../utils/errorCodes';
+import MessageManager from './message';
 
 interface Params {
   fastify: FastifyInstance;
@@ -11,18 +13,32 @@ interface Handlers extends Params {
   socket: Socket;
 }
 
-function setHandlers({ socket }: Handlers) {
+function setHandlers({ socket, fastify }: Handlers) {
+  MessageManager({ socket, io: fastify.io, fastify });
   socket.on('disconnecting', async () => {
     socket.rooms.forEach(async (room) => {
       if (room !== socket.id) {
-        const roomDb = await RoomModel.findById(room).exec();
+        const roomDb = await RoomModel.findById(room)
+          .populate<{ participants: { user: UserType; socketId: string }[] }>(
+            'participants.user',
+          )
+          .exec();
 
         if (roomDb) {
+          const oldUser = roomDb.participants.find(
+            (p) => p.socketId === socket.id,
+          );
           roomDb.participants = roomDb.participants.filter(
             (participant) => participant.toString() !== socket.id,
           );
-          await roomDb.save();
-          socket.to(room).emit('userLeft', socket.id);
+          if (oldUser) {
+            fastify.io.to(room).emit('message', {
+              message: `${oldUser.user.name} has left the room`,
+              to: room,
+              customSender: 'room',
+            });
+            await roomDb.save();
+          }
         }
       }
     });
@@ -59,6 +75,11 @@ export default function setupSocket({ fastify }: Params) {
                 });
                 await room.save();
                 socket.join(room._id.toString());
+                fastify.io.to(room._id.toString()).emit('message', {
+                  message: `${token.user.name} has joined the room`,
+                  to: room._id.toString(),
+                  customSender: 'room',
+                });
                 setHandlers({ socket, fastify });
               }
             } else {
