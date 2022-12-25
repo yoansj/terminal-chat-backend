@@ -19,4 +19,19 @@ export const getExistingToken = async (userId: string) => {
   return null;
 };
 
+export const getExistingTokenId = async (token: string) => {
+  const t = await TokenModel.findById(token)
+    .populate<{ user: UserType }>('user')
+    .exec();
+
+  if (t) {
+    if (new Date(t.expiresAt) > new Date()) {
+      return t;
+    }
+    await t.remove();
+    return null;
+  }
+  return null;
+};
+
 export default getExistingToken;

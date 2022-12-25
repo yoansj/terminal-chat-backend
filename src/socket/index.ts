@@ -20,8 +20,8 @@ function setHandlers({ socket, fastify }: Handlers) {
       if (room !== socket.id) {
         const roomDb = await RoomModel.findById(room)
           .populate<{ participants: { user: UserType; socketId: string }[] }>(
-            'participants.user',
-          )
+          'participants.user',
+        )
           .exec();
 
         if (roomDb) {
@@ -53,7 +53,7 @@ export default function setupSocket({ fastify }: Params) {
       );
 
       if (valid) {
-        const token = await fastify.utils.getExistingToken(
+        const token = await fastify.utils.getExistingTokenId(
           socket.handshake.auth.token,
         );
         if (token) {
@@ -63,7 +63,11 @@ export default function setupSocket({ fastify }: Params) {
             ).exec();
 
             if (room) {
-              if (room.password !== socket.handshake.query.password) {
+              if (
+                room.password !== undefined
+                && room.password !== ''
+                && room.password !== socket.handshake.query.password
+              ) {
                 socket.emit('error', {
                   errorCode: ERROR_CODES.WrongPassword,
                 });
@@ -75,6 +79,7 @@ export default function setupSocket({ fastify }: Params) {
                 });
                 await room.save();
                 socket.join(room._id.toString());
+                socket.emit('join_ok');
                 fastify.io.to(room._id.toString()).emit('message', {
                   message: `${token.user.name} has joined the room`,
                   to: room._id.toString(),

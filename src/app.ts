@@ -80,7 +80,11 @@ const app: FastifyPluginAsync<AppOptions> = async (
 
   await fastify.register(swaggerUI, {});
 
-  await fastify.register(fastifyIO);
+  await fastify.register(fastifyIO, {
+    cors: {
+      origin: '*',
+    },
+  });
 
   fastify.ready().then(() => {
     setupSocket({ fastify });

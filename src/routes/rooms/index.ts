@@ -53,7 +53,8 @@ const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
       });
       await room.save();
 
-      reply.status(200).send({ ...room });
+      console.log('Room created successfully', { ...room });
+      reply.status(200).send({ ...room.toObject() });
     },
   );
 
@@ -103,7 +104,9 @@ const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
         const rooms = await RoomModel.find({})
           .populate<{ participants: UserType[] }>('participants')
           .exec();
-
+        for (const room of rooms) {
+          room.password = undefined;
+        }
         reply.status(200).send(rooms);
       },
     );
