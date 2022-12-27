@@ -16,7 +16,10 @@ export default function MessageManager({ socket, io }: Params) {
     } else if (message.privateMessage) {
       socket.to(message.to).emit('message', message);
     } else {
-      io.to(message.to).emit('message', message);
+      io.to(message.to).emit('message', {
+        ...message,
+        time: new Date().toISOString(),
+      });
       const newMessage = new MessageModel({
         ...message,
         time: new Date().toISOString(),

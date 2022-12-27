@@ -7,6 +7,7 @@ export const Room = Type.Object({
   password: Type.Optional(Type.String()),
   subject: Type.Optional(Type.String()),
   participants: Type.Array(Participant),
+  protected: Type.Optional(Type.Boolean()),
 });
 
 export type RoomType = Static<typeof Room>;
@@ -21,6 +22,7 @@ export const roomSchema = new Schema<RoomType>({
       socketId: { type: String, required: true },
     },
   ],
+  protected: { type: Boolean, required: false },
 });
 
 export const RoomModel = model<RoomType>('Room', roomSchema);

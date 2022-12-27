@@ -123,7 +123,7 @@ const users: FastifyPluginAsync = async (fastify): Promise<void> => {
       if (!user) {
         reply.status(404).send({ errorCode: ERROR_CODES.NotFound });
       } else {
-        reply.status(200).send(user);
+        reply.status(200).send({ ...user.toObject(), password: '' });
       }
     },
   );

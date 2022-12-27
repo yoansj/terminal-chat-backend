@@ -36,6 +36,7 @@ const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
               subject: { type: 'string' },
               password: { type: 'string' },
               participants: { type: 'array', items: { type: 'string' } },
+              protected: { type: 'boolean' },
             },
           },
         },
@@ -53,7 +54,6 @@ const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
       });
       await room.save();
 
-      console.log('Room created successfully', { ...room });
       reply.status(200).send({ ...room.toObject() });
     },
   );
