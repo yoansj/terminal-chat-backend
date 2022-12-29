@@ -118,7 +118,7 @@ const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
     Params: {
       id: string;
     };
-    Response: boolean;
+    Response: { success: boolean };
     Querystring: {
       password: string;
     };
@@ -137,8 +137,8 @@ const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
         tags: ['Room'],
         security: [{ Bearer: ['Bearer [token'] }],
         response: {
-          200: {},
-          400: {},
+          200: { success: true },
+          400: { success: false },
         },
       },
     },
@@ -150,9 +150,9 @@ const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
 
       if (room) {
         if (room.password === password) {
-          reply.status(200).send(true);
+          reply.status(200).send({ success: true });
         } else {
-          reply.status(400).send(false);
+          reply.status(400).send({ success: false });
         }
       } else {
         reply
