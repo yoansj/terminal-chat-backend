@@ -123,7 +123,7 @@ const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
       password: string;
     };
   }>(
-    '/:id/test-password',
+    '/:id/password',
     {
       config: { protected: true },
       schema: {
