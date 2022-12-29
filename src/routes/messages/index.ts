@@ -12,11 +12,11 @@ const messages: FastifyPluginAsync = async (fastify): Promise<void> => {
    * User needs to be in the room
    */
   fastify.withTypeProvider<TypeBoxTypeProvider>().get(
-    '/',
+    '/:roomId',
     {
       config: { protected: true },
       schema: {
-        tags: ['Accounts'],
+        tags: ['Room'],
         security: [{ Bearer: ['Bearer [token'] }],
         summary: 'Gets messages from a room',
         params: Type.Object({ roomId: Type.String() }),

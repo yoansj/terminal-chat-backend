@@ -25,9 +25,11 @@ function setHandlers({ socket, fastify }: Handlers) {
           .exec();
 
         if (roomDb) {
+          console.log(roomDb.participants);
           const oldUser = roomDb.participants.find(
             (p) => p.socketId === socket.id,
           );
+          console.log(oldUser);
           roomDb.participants = roomDb.participants.filter(
             (participant) => participant.socketId !== socket.id,
           );

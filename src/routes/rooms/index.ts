@@ -4,6 +4,7 @@ import { RoomModel } from './../../schemas/Room';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { FastifyPluginAsync } from 'fastify';
 import { RoomType, Room } from '../../schemas/Room';
+import ERROR_CODES from '../../utils/errorCodes';
 
 const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
   /**
@@ -81,7 +82,7 @@ const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
                   _id: { type: 'string' },
                   name: { type: 'string' },
                   subject: { type: 'string' },
-                  password: { type: 'string' },
+                  protected: { type: 'boolean' },
                   participants: {
                     type: 'array',
                     items: {
@@ -104,12 +105,68 @@ const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
         const rooms = await RoomModel.find({})
           .populate<{ participants: UserType[] }>('participants')
           .exec();
-        for (const room of rooms) {
-          room.password = undefined;
-        }
-        reply.status(200).send(rooms);
+        reply
+          .status(200)
+          .send(rooms.map((r) => ({ ...r.toObject(), password: undefined })));
       },
     );
+
+  /**
+   * Test room password
+   */
+  fastify.withTypeProvider<TypeBoxTypeProvider>().post<{
+    Params: {
+      id: string;
+    };
+    Response: boolean;
+    Querystring: {
+      password: string;
+    };
+  }>(
+    '/:id/test-password',
+    {
+      config: { protected: true },
+      schema: {
+        summary: 'Tests the password of a room',
+        params: Type.Object({
+          id: Type.String(),
+        }),
+        querystring: Type.Object({
+          password: Type.String(),
+        }),
+        tags: ['Room'],
+        security: [{ Bearer: ['Bearer [token'] }],
+        response: {
+          200: {},
+          400: {},
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const { password } = request.query;
+
+      const room = await RoomModel.findById(id).exec();
+
+      if (room) {
+        if (room.password === password) {
+          reply.status(200).send(true);
+        } else {
+          reply.status(400).send(false);
+        }
+      } else {
+        reply
+          .status(404)
+          .send({ errorCode: ERROR_CODES.NotFound, success: false });
+      }
+      const rooms = await RoomModel.find({})
+        .populate<{ participants: UserType[] }>('participants')
+        .exec();
+      reply
+        .status(200)
+        .send(rooms.map((r) => ({ ...r.toObject(), password: undefined })));
+    },
+  );
 };
 
 export default rooms;
