@@ -29,7 +29,7 @@ function setHandlers({ socket, fastify }: Handlers) {
             (p) => p.socketId === socket.id,
           );
           roomDb.participants = roomDb.participants.filter(
-            (participant) => participant.toString() !== socket.id,
+            (participant) => participant.socketId !== socket.id,
           );
           if (oldUser) {
             fastify.io.to(room).emit('message', {
