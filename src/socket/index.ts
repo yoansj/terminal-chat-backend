@@ -25,11 +25,9 @@ function setHandlers({ socket, fastify }: Handlers) {
           .exec();
 
         if (roomDb) {
-          console.log(roomDb.participants);
           const oldUser = roomDb.participants.find(
             (p) => p.socketId === socket.id,
           );
-          console.log(oldUser);
           roomDb.participants = roomDb.participants.filter(
             (participant) => participant.socketId !== socket.id,
           );
@@ -39,6 +37,10 @@ function setHandlers({ socket, fastify }: Handlers) {
               to: room,
               customSender: 'room',
             });
+          }
+          if (roomDb.participants.length === 0) {
+            await roomDb.remove();
+          } else {
             await roomDb.save();
           }
         }
@@ -60,9 +62,11 @@ export default function setupSocket({ fastify }: Params) {
         );
         if (token) {
           if (socket.handshake.query.room) {
-            const room = await RoomModel.findById(
-              socket.handshake.query.room,
-            ).exec();
+            const room = await RoomModel.findById(socket.handshake.query.room)
+              .populate<{
+              participants: { user: UserType; socketId: string }[];
+            }>('participants.user')
+              .exec();
 
             if (room) {
               if (
@@ -75,11 +79,13 @@ export default function setupSocket({ fastify }: Params) {
                 });
                 socket.disconnect();
               } else {
-                room.participants.push({
-                  user: token.user,
-                  socketId: socket.id,
-                });
-                await room.save();
+                if (!room.participants.find((p) => p.user._id)) {
+                  room.participants.push({
+                    user: token.user,
+                    socketId: socket.id,
+                  });
+                  await room.save();
+                }
                 socket.join(room._id.toString());
                 socket.emit('join_ok');
                 fastify.io.to(room._id.toString()).emit('message', {
