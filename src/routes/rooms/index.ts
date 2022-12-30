@@ -230,7 +230,9 @@ const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
             .exec();
           if (room !== null && token !== null) {
             if (room.participants.find((p) => p.user._id)) {
-              const messages = await MessageModel.find({ to: room._id }).exec();
+              const messages = await MessageModel.find({ to: room._id })
+                .populate<{ user: UserType }>('user')
+                .exec();
               return messages.map((m) => m.toObject());
             }
           } else {
