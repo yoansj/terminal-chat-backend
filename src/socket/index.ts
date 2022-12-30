@@ -37,6 +37,12 @@ function setHandlers({ socket, fastify }: Handlers) {
               to: room,
               customSender: 'room',
             });
+          } else {
+            fastify.io.to(room).emit('message', {
+              message: 'Someone has left the room',
+              to: room,
+              customSender: 'room',
+            });
           }
           fastify.io.to(room).emit('participants', roomDb.participants);
           if (roomDb.participants.length === 0) {
@@ -80,7 +86,7 @@ export default function setupSocket({ fastify }: Params) {
                 });
                 socket.disconnect();
               } else {
-                if (!room.participants.find((p) => p.user._id)) {
+                if (room.participants.find((p) => p.user._id) === undefined) {
                   room.participants.push({
                     user: token.user,
                     socketId: socket.id,
