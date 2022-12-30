@@ -20,8 +20,8 @@ function setHandlers({ socket, fastify }: Handlers) {
       if (room !== socket.id) {
         const roomDb = await RoomModel.findById(room)
           .populate<{ participants: { user: UserType; socketId: string }[] }>(
-            'participants.user',
-          )
+          'participants.user',
+        )
           .exec();
 
         if (roomDb) {
@@ -75,15 +75,15 @@ export default function setupSocket({ fastify }: Params) {
           if (socket.handshake.query.room) {
             const room = await RoomModel.findById(socket.handshake.query.room)
               .populate<{
-                participants: { user: UserType; socketId: string }[];
-              }>('participants.user')
+              participants: { user: UserType; socketId: string }[];
+            }>('participants.user')
               .exec();
 
             if (room) {
               if (
-                room.password !== undefined &&
-                room.password !== '' &&
-                room.password !== socket.handshake.query.password
+                room.password !== undefined
+                && room.password !== ''
+                && room.password !== socket.handshake.query.password
               ) {
                 socket.emit('error', {
                   errorCode: ERROR_CODES.WrongPassword,
