@@ -37,8 +37,8 @@ function setHandlers({ socket, fastify }: Handlers) {
               to: room,
               customSender: 'room',
             });
-            socket.emit('participants', roomDb.participants);
           }
+          fastify.io.to(room).emit('participants', roomDb.participants);
           if (roomDb.participants.length === 0) {
             await roomDb.remove();
           } else {
@@ -89,12 +89,14 @@ export default function setupSocket({ fastify }: Params) {
                 }
                 socket.join(room._id.toString());
                 socket.emit('join_ok');
-                socket.emit('participants', room.participants);
                 fastify.io.to(room._id.toString()).emit('message', {
                   message: `${token.user.name} has joined the room`,
                   to: room._id.toString(),
                   customSender: 'room',
                 });
+                fastify.io
+                  .to(room._id.toString())
+                  .emit('participants', room.participants);
                 setHandlers({ socket, fastify });
               }
             } else {
