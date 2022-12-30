@@ -195,6 +195,15 @@ const rooms: FastifyPluginAsync = async (fastify): Promise<void> => {
                 time: { type: 'string' },
                 customSender: { type: 'string' },
                 privateMessage: { type: 'boolean' },
+                user: {
+                  type: 'object',
+                  properties: {
+                    _id: { type: 'string' },
+                    name: { type: 'string' },
+                    mail: { type: 'string' },
+                    bio: { type: 'string' },
+                  },
+                },
               },
             },
           },
