@@ -7,6 +7,7 @@ import fastifyIO from 'fastify-socket.io';
 import fastifySwagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
 import cors from '@fastify/cors';
+import { Message } from './schemas/Message';
 import { Room } from './schemas/Room';
 import { User } from './schemas/User';
 import setupSocket from './socket';
@@ -49,6 +50,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
       definitions: {
         User,
         Room,
+        Message,
       },
       tags: [
         {
