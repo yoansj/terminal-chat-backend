@@ -86,7 +86,12 @@ export default function setupSocket({ fastify }: Params) {
                 });
                 socket.disconnect();
               } else {
-                if (room.participants.find((p) => p.user._id) === undefined) {
+                if (
+                  room.participants.find(
+                    (p) => p.user._id === token.user._id,
+                  ) === undefined
+                ) {
+                  console.log('new user is being added to the room');
                   room.participants.push({
                     user: token.user,
                     socketId: socket.id,
