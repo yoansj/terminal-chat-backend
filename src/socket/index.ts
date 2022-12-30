@@ -20,8 +20,8 @@ function setHandlers({ socket, fastify }: Handlers) {
       if (room !== socket.id) {
         const roomDb = await RoomModel.findById(room)
           .populate<{ participants: { user: UserType; socketId: string }[] }>(
-          'participants.user',
-        )
+            'participants.user',
+          )
           .exec();
 
         if (roomDb) {
@@ -33,20 +33,24 @@ function setHandlers({ socket, fastify }: Handlers) {
           );
           if (oldUser) {
             fastify.io.to(room).emit('message', {
-              message: `${oldUser.user.name} has left the room`,
+              message: '',
               to: room,
               customSender: 'room',
+              event: 'left',
+              leftName: oldUser.user.name,
             });
           } else {
             fastify.io.to(room).emit('message', {
               message: 'Someone has left the room',
               to: room,
               customSender: 'room',
+              event: 'left',
+              leftName: '',
             });
           }
           fastify.io.to(room).emit('participants', roomDb.participants);
           if (roomDb.participants.length === 0) {
-            // await roomDb.remove();
+            await roomDb.remove();
           } else {
             await roomDb.save();
           }
@@ -71,15 +75,15 @@ export default function setupSocket({ fastify }: Params) {
           if (socket.handshake.query.room) {
             const room = await RoomModel.findById(socket.handshake.query.room)
               .populate<{
-              participants: { user: UserType; socketId: string }[];
-            }>('participants.user')
+                participants: { user: UserType; socketId: string }[];
+              }>('participants.user')
               .exec();
 
             if (room) {
               if (
-                room.password !== undefined
-                && room.password !== ''
-                && room.password !== socket.handshake.query.password
+                room.password !== undefined &&
+                room.password !== '' &&
+                room.password !== socket.handshake.query.password
               ) {
                 socket.emit('error', {
                   errorCode: ERROR_CODES.WrongPassword,
@@ -91,7 +95,6 @@ export default function setupSocket({ fastify }: Params) {
                     (p) => p.user._id === token.user._id,
                   ) === undefined
                 ) {
-                  console.log('new user is being added to the room');
                   room.participants.push({
                     user: token.user,
                     socketId: socket.id,
@@ -101,9 +104,11 @@ export default function setupSocket({ fastify }: Params) {
                 socket.join(room._id.toString());
                 socket.emit('join_ok');
                 fastify.io.to(room._id.toString()).emit('message', {
-                  message: `${token.user.name} has joined the room`,
+                  message: '',
                   to: room._id.toString(),
                   customSender: 'room',
+                  event: 'joined',
+                  joinedName: token.user.name,
                 });
                 fastify.io
                   .to(room._id.toString())
