@@ -46,7 +46,7 @@ function setHandlers({ socket, fastify }: Handlers) {
           }
           fastify.io.to(room).emit('participants', roomDb.participants);
           if (roomDb.participants.length === 0) {
-            await roomDb.remove();
+            // await roomDb.remove();
           } else {
             await roomDb.save();
           }
